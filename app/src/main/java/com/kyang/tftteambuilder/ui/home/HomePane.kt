@@ -30,6 +30,7 @@ fun HomePane(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
             onRemove = { index -> viewModel.removeChampion(index) },
             swapIndex = uiState.swapIndex
         )
+        TraitBox(traits = uiState.traits)
         ChampionBox(boxModel = uiState.box, onClick = { viewModel.addChampion(it) })
     }
 }

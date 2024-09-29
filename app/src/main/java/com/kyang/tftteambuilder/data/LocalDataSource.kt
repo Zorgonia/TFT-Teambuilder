@@ -147,12 +147,12 @@ class LocalDataSource @Inject constructor() {
         //hack to make arcana work, get (2) (3) (4) (5) into first set of data
         remainingString = remainingString.replaceFirst("</span></div></div>", "")
         while(remainingString.contains("/info/traits/")) {
-            val parsedData = getDataBetweenDelimiters(remainingString, "</a>")
+            val parsedData = getDataBetweenDelimiters(remainingString, "</span></div></div>")
             traits.add(parseTraitData(parsedData))
             remainingString = remainingString.substringAfter("/info/traits/")
         }
         //get last trait
-        val parsedData = getDataBetweenDelimiters(remainingString, "</a>")
+        val parsedData = getDataBetweenDelimiters(remainingString, "</span></div></div>")
         traits.add(parseTraitData(parsedData))
         return traits
     }
