@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TFT Teambuilder</string>
+    <string name="home">Home</string>
+    <string name="home_route">Home</string>
+    <string name="detail_route">Detail</string>
+    <string name="detail_screen">This is the detail screen</string>
+    <string name="home_screen">This is the home screen.</string>
 </resources>
