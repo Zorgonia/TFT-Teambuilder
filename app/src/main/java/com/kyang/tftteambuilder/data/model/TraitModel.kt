@@ -10,7 +10,7 @@ data class ChampionTrait(
 )
 
 data class TraitBreakpoint(
-    val breakPoint: Int,
+    val breakpoint: Int,
     val tier: TraitTier,
     val subtext: String
 )
@@ -30,6 +30,6 @@ data class TraitModel(
 
 data class ActiveTrait(
     val trait: ChampionTrait,
-    val current: Int,
-    val breakpoint: TraitBreakpoint
+    val numOfUnits: Int,
+    val breakpoint: TraitBreakpoint?
 )

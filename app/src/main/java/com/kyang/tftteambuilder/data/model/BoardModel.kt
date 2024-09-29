@@ -25,3 +25,11 @@ enum class ChampionCost(val color: Color, val cost: String) {
     FOUR(Color.Magenta, "4"),
     FIVE(Color.Yellow, "5")
 }
+
+//fun BoardSpace.copy(): BoardSpace {
+//    if (this is BoardChampion) {
+//        return this.copy(traits = this.traits.map { it.copy() })
+//    } else if (this is EmptyBoardSpace) {
+//        return EmptyBoardSpace
+//    }
+//}

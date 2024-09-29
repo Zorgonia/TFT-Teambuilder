@@ -16,7 +16,7 @@ class LocalUnitRepository @Inject constructor(
     }
 
     override suspend fun loadTraitData(context: Context) {
-        TODO("Not yet implemented")
+        return dataSource.loadTraitData(context)
     }
 
     override fun getTraitData(): List<ChampionTrait> {

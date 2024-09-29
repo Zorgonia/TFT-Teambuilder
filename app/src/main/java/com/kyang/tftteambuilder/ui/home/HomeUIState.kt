@@ -17,8 +17,8 @@ data class HomeUIState(
     ),
     val box: BoxModel = BoxModel(listOf()),
     val traits: TraitModel = DEFAULT_TRAITS,
-
-    )
+    val swapIndex: Pair<Int, Int> = Pair(-1,-1)
+)
 
 val DEFAULT_BOARD_ROW = listOf(
     EmptyBoardSpace,
