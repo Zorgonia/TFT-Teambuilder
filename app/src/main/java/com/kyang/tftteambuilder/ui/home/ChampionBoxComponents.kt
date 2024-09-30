@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.kyang.tftteambuilder.data.model.BoardChampion
@@ -25,10 +26,11 @@ fun ChampionBox(
     onClick: (BoardChampion) -> Unit,
     boxModel: BoxModel
 ) {
+    val localConfig = LocalConfiguration.current
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.FixedSize(64.dp),
-        contentPadding = PaddingValues(all = 8.dp)
+        columns = GridCells.FixedSize((localConfig.screenWidthDp / 6).dp),
+        contentPadding = PaddingValues(all = 0.dp)
     ) {
         for ((index, tier) in boxModel.tiers.withIndex()) {
             itemsIndexed(tier.champions) { columnNum, champion ->
@@ -36,7 +38,6 @@ fun ChampionBox(
                     champion = champion,
                     onClick = onClick,
                     modifier = Modifier
-                        .size(64.dp)
                         .padding(4.dp)
                 )
             }

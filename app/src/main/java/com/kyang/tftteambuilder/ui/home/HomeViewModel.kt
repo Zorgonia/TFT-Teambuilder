@@ -68,7 +68,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun swapChampions(from: Pair<Int, Int>, to: Pair<Int, Int>) {
-        Log.d("testing", "$from $to")
         _uiState.update {
             val toUpdate = it.board.rows.toMutableList()
 
@@ -83,8 +82,6 @@ class HomeViewModel @Inject constructor(
             val updatedFrom = toUpdate[from.first].toMutableList()
             updatedFrom[from.second] = space
             toUpdate[from.first] = updatedFrom
-
-            Log.d("testing", "${updatedFrom[from.second]} ${updatedDest[to.second]}")
 
             it.copy(
                 board = BoardModel(toUpdate), swapIndex = Pair(-1, -1)
@@ -145,15 +142,14 @@ class HomeViewModel @Inject constructor(
                 if (indexOfTrait > -1) {
                     val diff = if (added) 1 else -1
                     val newNumUnits = currentTraits[indexOfTrait].numOfUnits + diff
-                    if (newNumUnits > 0) {
-                        val highestBreakpoint =
-                            currentTraits[indexOfTrait].trait.breakpoints.map { it.breakpoint }
-                                .findHighestOf(newNumUnits)
-                        currentTraits[indexOfTrait] = currentTraits[indexOfTrait].copy(
-                            breakpoint = trait.breakpoints.firstOrNull { it.breakpoint == highestBreakpoint },
-                            numOfUnits = newNumUnits
-                        )
-                    }
+                    val highestBreakpoint =
+                        currentTraits[indexOfTrait].trait.breakpoints.map { it.breakpoint }
+                            .findHighestOf(newNumUnits)
+                    currentTraits[indexOfTrait] = currentTraits[indexOfTrait].copy(
+                        breakpoint = trait.breakpoints.firstOrNull { it.breakpoint == highestBreakpoint },
+                        numOfUnits = newNumUnits
+                    )
+
                 } else if (added) {
                     val firstBreakpoint = trait.breakpoints.first()
                     currentTraits.add(
