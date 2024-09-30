@@ -10,6 +10,7 @@ import com.kyang.tftteambuilder.data.model.ChampionTrait
 import com.kyang.tftteambuilder.data.model.TraitBreakpoint
 import com.kyang.tftteambuilder.data.model.TraitTier
 import com.kyang.tftteambuilder.util.substringBetween
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -19,19 +20,21 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LocalDataSource @Inject constructor() {
+class LocalDataSource @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     private val traitsMap: MutableMap<String, ChampionTrait> = mutableMapOf()
 
-    fun getUnitBox(context: Context): BoxModel {
-        loadTraitData(context)
-        val data = readFile(context, "units.html", ::parseUnitString)
+    fun getUnitBox(): BoxModel {
+        loadTraitData()
+        val data = readFile("units.html", ::parseUnitString)
         val boxModel = createTiers(data)
         return boxModel
     }
 
-    fun loadTraitData(context: Context) {
-        val data = readFile(context, "traits.html", ::parseTraitString)
+    fun loadTraitData() {
+        val data = readFile("traits.html", ::parseTraitString)
 
         data.forEach {
             traitsMap[it.name] = it
@@ -41,7 +44,6 @@ class LocalDataSource @Inject constructor() {
     }
 
     private fun <T> readFile(
-        context: Context,
         fileName: String,
         parseFunction: (String) -> List<T>
     ): List<T> {

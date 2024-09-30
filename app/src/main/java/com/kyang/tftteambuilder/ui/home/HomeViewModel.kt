@@ -28,9 +28,9 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
-    fun loadData(context: Context) {
+    fun loadData() {
         viewModelScope.launch {
-            val data = unitRepository.getUnitBox(context)
+            val data = unitRepository.getUnitBox()
             _uiState.update {
                 it.copy(box = data)
             }

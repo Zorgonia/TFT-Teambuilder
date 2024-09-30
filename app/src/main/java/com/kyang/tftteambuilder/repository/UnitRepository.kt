@@ -6,9 +6,9 @@ import com.kyang.tftteambuilder.data.model.ChampionTrait
 
 interface UnitRepository {
 
-    suspend fun getUnitBox(context: Context): BoxModel
+    suspend fun getUnitBox(): BoxModel
 
-    suspend fun loadTraitData(context: Context)
+    suspend fun loadTraitData()
 
     fun getTraitData(): List<ChampionTrait>
 }

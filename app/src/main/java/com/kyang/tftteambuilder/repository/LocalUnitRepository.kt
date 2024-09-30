@@ -11,12 +11,12 @@ import javax.inject.Singleton
 class LocalUnitRepository @Inject constructor(
     private val dataSource: LocalDataSource
 ): UnitRepository {
-    override suspend fun getUnitBox(context: Context): BoxModel {
-        return dataSource.getUnitBox(context)
+    override suspend fun getUnitBox(): BoxModel {
+        return dataSource.getUnitBox()
     }
 
-    override suspend fun loadTraitData(context: Context) {
-        return dataSource.loadTraitData(context)
+    override suspend fun loadTraitData() {
+        return dataSource.loadTraitData()
     }
 
     override fun getTraitData(): List<ChampionTrait> {

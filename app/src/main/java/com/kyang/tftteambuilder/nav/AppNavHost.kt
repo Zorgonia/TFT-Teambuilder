@@ -20,7 +20,7 @@ fun AppNavHost(
      NavHost(navController = navController, startDestination = Home.route, modifier = modifier) {
           composable(route = Home.route) {
                val viewModel = hiltViewModel<HomeViewModel>()
-               viewModel.loadData(LocalContext.current)
+               viewModel.loadData()
                HomePane(viewModel = viewModel)
           }
 

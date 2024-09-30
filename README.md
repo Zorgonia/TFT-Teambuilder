@@ -9,6 +9,9 @@ Websites such as [tactics.tools](https://tactics.tools/) and [Meta Tft](https://
 exist already as web apps that have this implementation. I just wanted to see if I could recreate 
 the functionality in an Android app.
 
+I am used an html version of tactics.tools on Set 12 (since I could not find the unit data in
+Riot's API at the time).
+
 ### Legal
 
 This app uses assets from tactics.tools and MetaTFT, but for non commercial purposes. If the assets
