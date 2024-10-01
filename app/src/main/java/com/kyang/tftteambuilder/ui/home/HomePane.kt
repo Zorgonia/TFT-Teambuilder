@@ -26,7 +26,7 @@ fun HomePane(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
         ChampionBoard(
             board = uiState.board,
             onSwap = { index -> viewModel.swapSpaces(index) },
-            fromBox = { boxIndex, boardIndex -> viewModel.addFromBox(boxIndex, boardIndex) },
+            onDrag = { indexOne, indexTwo -> viewModel.swapChampions(indexOne, indexTwo) },
             onRemove = { index -> viewModel.removeChampion(index) },
             swapIndex = uiState.swapIndex
         )

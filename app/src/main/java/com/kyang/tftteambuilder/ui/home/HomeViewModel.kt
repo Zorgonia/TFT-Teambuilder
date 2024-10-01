@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun swapChampions(from: Pair<Int, Int>, to: Pair<Int, Int>) {
+    fun swapChampions(from: Pair<Int, Int>, to: Pair<Int, Int>) {
         _uiState.update {
             val toUpdate = it.board.rows.toMutableList()
 
@@ -84,7 +84,8 @@ class HomeViewModel @Inject constructor(
             toUpdate[from.first] = updatedFrom
 
             it.copy(
-                board = BoardModel(toUpdate), swapIndex = Pair(-1, -1)
+                board = BoardModel(toUpdate), swapIndex = Pair(-1, -1),
+                test = !it.test
             )
         }
     }

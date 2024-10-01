@@ -1,10 +1,14 @@
 package com.kyang.tftteambuilder.ui.home
 
+import android.content.ClipData
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.draganddrop.dragAndDropSource
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,10 +17,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.compose.ui.graphics.Color
@@ -38,7 +44,7 @@ import com.kyang.tftteambuilder.util.parseAsIndex
 fun ChampionBoard(
     modifier: Modifier = Modifier,
     onSwap: (Pair<Int, Int>) -> Unit,
-    fromBox: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
+    onDrag: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     onRemove: (Pair<Int, Int>) -> Unit,
     swapIndex: Pair<Int, Int>,
     board: BoardModel
@@ -52,11 +58,11 @@ fun ChampionBoard(
                     end = if (rowNum % 2 == 1) 0.dp else 32.dp
                 )
             ) {
-                itemsIndexed(row) { columnNum, space ->
+                itemsIndexed(row, key = { index, item -> if (item is BoardChampion) "${item.name} $index" else "$item $index" }) { columnNum, space ->
                     Space(
                         boardSpace = space,
                         onSwap = onSwap,
-                        fromBox = fromBox,
+                        onDrag = onDrag,
                         isSwapping = swapIndex == Pair(rowNum, columnNum),
                         championIndex = Pair(rowNum, columnNum),
                         onRemove = onRemove,
@@ -77,7 +83,7 @@ internal fun Space(
     isSwapping: Boolean,
     onSwap: (Pair<Int, Int>) -> Unit,
     onRemove: (Pair<Int, Int>) -> Unit,
-    fromBox: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
+    onDrag: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     width: Dp = 64.dp
 ) {
     val dragDropCallback = remember {
@@ -87,9 +93,10 @@ internal fun Space(
                     if (s == "text/plain") {
                         val dataIndex = event.toAndroidDragEvent().clipData.getItemAt(index).text
                         dataIndex.toString().parseAsIndex()?.let {
+                            Log.d("test", "$it $championIndex")
                             val label = event.toAndroidDragEvent().clipData.description.label
-                            if (label == "box") {
-                                fromBox(it, championIndex)
+                            if (label == "Index") {
+                                onDrag(it, championIndex)
                             }
                         }
 
@@ -104,9 +111,6 @@ internal fun Space(
     if (boardSpace is BoardChampion) {
         Box(
             modifier = modifier
-                .combinedClickable(onClick = {
-                    onSwap(championIndex)
-                }, onDoubleClick = { onRemove(championIndex) })
                 .dragAndDropTarget(
                     shouldStartDragAndDrop = { event ->
                         event
@@ -115,17 +119,35 @@ internal fun Space(
                     },
                     target = dragDropCallback
                 )
+                .dragAndDropSource {
+                    detectTapGestures(onLongPress = {
+                        startTransfer(
+                            DragAndDropTransferData(
+                                ClipData.newPlainText("Index", championIndex.toString())
+                            )
+                        )
+                    })
+                }
         ) {
             ChampionSpace(
                 champion = boardSpace,
                 championIndex = championIndex,
                 width = width,
-                isSwapping = isSwapping
+                isSwapping = isSwapping,
             )
         }
     } else if (boardSpace is EmptyBoardSpace) {
         EmptySpace(
-            modifier = modifier.clickable { onSwap(championIndex) },
+            modifier = modifier
+                .clickable { onSwap(championIndex) }
+                .dragAndDropTarget(
+                    shouldStartDragAndDrop = { event ->
+                        event
+                            .mimeTypes()
+                            .contains("text/plain")
+                    },
+                    target = dragDropCallback
+                ),
             width = width,
             isSwapping = isSwapping
         )

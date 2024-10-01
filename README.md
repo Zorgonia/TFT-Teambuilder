@@ -12,6 +12,13 @@ the functionality in an Android app.
 I am used an html version of tactics.tools on Set 12 (since I could not find the unit data in
 Riot's API at the time).
 
+### Drag and Drop
+
+Experimental branch for showing drag and drop features, does not seem to work well with other click methods,
+so leaving it here
+
+![Drag and Drop Video](images/drag_drop.mov "Drag and drop video")
+
 ### Legal
 
 This app uses assets from tactics.tools and MetaTFT, but for non commercial purposes. If the assets
