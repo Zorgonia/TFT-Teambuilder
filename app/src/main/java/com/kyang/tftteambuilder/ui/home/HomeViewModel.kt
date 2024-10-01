@@ -85,7 +85,6 @@ class HomeViewModel @Inject constructor(
 
             it.copy(
                 board = BoardModel(toUpdate), swapIndex = Pair(-1, -1),
-                test = !it.test
             )
         }
     }
