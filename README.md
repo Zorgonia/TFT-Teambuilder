@@ -14,7 +14,8 @@ Riot's API at the time).
 
 ### Experimental Features
 
-There are implementations of experimental features in `items` and `drag-drop`. If you're interested
+There are implementations of experimental features in branches [items](https://github.com/Zorgonia/TFT-Teambuilder/tree/items) 
+and [drag-drop](https://github.com/Zorgonia/TFT-Teambuilder/tree/drag-drop). If you're interested
 in seeing those implementations, check them out!
 
 ### Legal
