@@ -1,7 +1,7 @@
 # TFT Teambuilder POC
 A team builder app for Teamfight tactics, set 12.
 
-![Screenshot of App](/images/screenshot.png "Screenshot of app")
+<img src="/images/screenshot.png" alt="screenshot of app" width="360"/>
 
 This app is a simple POC for making a team builder app for Teamfight Tactics on mobile.
 
@@ -17,9 +17,9 @@ Riot's API at the time).
 Experimental branch with item integration. Supports emblems, including unique emblems, and not being
 able to drag emblems on units that already have that trait. Examples below:
 
-![Screenshot of Items](/images/items.png "Screenshot of Items")
+<img src="/images/items.png" alt="screenshot of items" width="360"/>
 
-![Video of Items](/images/items_2.mov "Video of Items")
+<img src="/images/items.gif" alt="screenshot of app" width="360"/>
 
 ### Legal
 
