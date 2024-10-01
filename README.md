@@ -1,7 +1,7 @@
 # TFT Teambuilder POC
 A team builder app for Teamfight tactics, set 12.
 
-![Screenshot of App](/images/screenshot.png "Screenshot of app")
+<img src="/images/screenshot.png" alt="screenshot of app" width="360"/>
 
 This app is a simple POC for making a team builder app for Teamfight Tactics on mobile.
 
