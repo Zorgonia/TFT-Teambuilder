@@ -1,7 +1,7 @@
 # TFT Teambuilder POC
 A team builder app for Teamfight tactics, set 12.
 
-![Screenshot of App](/images/screenshot.png "Screenshot of app")
+<img src="/images/screenshot.png" alt="screenshot of app" width="360"/>
 
 This app is a simple POC for making a team builder app for Teamfight Tactics on mobile.
 
@@ -18,6 +18,7 @@ Experimental branch for showing drag and drop features, does not seem to work we
 so leaving it here
 
 ![Drag and Drop Video](images/drag_drop.mov "Drag and drop video")
+
 
 ### Legal
 
