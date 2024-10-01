@@ -7,6 +7,8 @@ import com.kyang.tftteambuilder.data.model.BoxModel
 import com.kyang.tftteambuilder.data.model.BoxTier
 import com.kyang.tftteambuilder.data.model.ChampionCost
 import com.kyang.tftteambuilder.data.model.ChampionTrait
+import com.kyang.tftteambuilder.data.model.ItemModel
+import com.kyang.tftteambuilder.data.model.TftItem
 import com.kyang.tftteambuilder.data.model.TraitBreakpoint
 import com.kyang.tftteambuilder.data.model.TraitTier
 import com.kyang.tftteambuilder.util.substringBetween
@@ -41,6 +43,16 @@ class LocalDataSource @Inject constructor(
         }
 
         Log.d("LocalDataSource", "$traitsMap")
+    }
+
+    fun getItemData(): ItemModel {
+        val data = readFile("items.html", ::parseItemString)
+        val itemModel = ItemModel(data)
+        return itemModel
+    }
+
+    fun getTraitData(): List<ChampionTrait> {
+        return traitsMap.values.toList()
     }
 
     private fun <T> readFile(
@@ -218,6 +230,47 @@ class LocalDataSource @Inject constructor(
             size == 0 -> listOf(TraitTier.UNIQUE)
             else -> listOf(TraitTier.NONE)
         }
+    }
+
+    private fun parseItemString(line: String): List<TftItem> {
+        val tftItems = mutableListOf<TftItem>()
+        if (!line.contains("items-start")) {
+            return emptyList()
+        }
+
+        var remaining = line.substringAfter("items-start")
+        while (remaining.contains("items-start")) {
+            val data = getDataBetweenDelimiters(remaining, "</span></span></div></div>").toMutableList()
+            //add query info to image
+            data.add(1, remaining.substringBetween("src=\"", "?w=").plus("?w=196"))
+
+            convertItemData(data)?.let {
+                tftItems.add(it)
+            }
+
+            remaining = remaining.substringAfter("items-start")
+        }
+
+        //get last item
+        val data = getDataBetweenDelimiters(remaining, "</span></span></div></div>").toMutableList()
+        data.add(1, remaining.substringBetween("src=\"", "?w=").plus("?w=196"))
+
+        convertItemData(data)?.let {
+            tftItems.add(it)
+        }
+        return tftItems
+    }
+
+    private fun convertItemData(data: List<String>): TftItem? {
+        if (data.size < 2) {
+            return null
+        }
+
+        return TftItem(
+            name = parseScrapedName(data[0]),
+            image = data[1],
+            description = parseScrapedName(data.subList(2, data.size).joinToString(" "))
+        )
     }
 
     private fun parseScrapedName(name: String): String {

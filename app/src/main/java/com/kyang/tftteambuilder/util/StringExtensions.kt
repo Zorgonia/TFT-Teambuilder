@@ -15,3 +15,7 @@ fun String.parseAsIndex(): Pair<Int, Int>? {
         return null
     }
 }
+
+fun String.getEmblemTraitName(): String {
+    return this.replace("Emblem", "").trim()
+}

@@ -1,7 +1,5 @@
 package com.kyang.tftteambuilder.ui.home
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kyang.tftteambuilder.data.model.ActiveTrait
@@ -10,8 +8,9 @@ import com.kyang.tftteambuilder.data.model.BoardModel
 import com.kyang.tftteambuilder.data.model.ChampionTrait
 import com.kyang.tftteambuilder.data.model.EmptyBoardSpace
 import com.kyang.tftteambuilder.data.model.TraitModel
-import com.kyang.tftteambuilder.repository.UnitRepository
+import com.kyang.tftteambuilder.repository.DataRepository
 import com.kyang.tftteambuilder.util.findHighestOf
+import com.kyang.tftteambuilder.util.getEmblemTraitName
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val unitRepository: UnitRepository
+    private val dataRepository: DataRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState())
@@ -30,10 +29,17 @@ class HomeViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
-            val data = unitRepository.getUnitBox()
+            val data = dataRepository.getUnitBox()
+            val items = dataRepository.loadItems()
             _uiState.update {
-                it.copy(box = data)
+                it.copy(box = data, items = items)
             }
+        }
+    }
+
+    fun swapChampionView() {
+        _uiState.update {
+            it.copy(showChampions = !it.showChampions)
         }
     }
 
@@ -120,6 +126,87 @@ class HomeViewModel @Inject constructor(
             it.copy(
                 board = BoardModel(toUpdate)
             )
+        }
+    }
+
+    fun addItemToChampion(championIndex: Pair<Int, Int>, itemIndex: Int) {
+        if (_uiState.value.items.items[itemIndex].name.contains("Emblem")) {
+            updateTraitFromItem(championIndex, itemIndex)
+        }
+        _uiState.update { currState ->
+            val toUpdate = currState.board.rows.toMutableList()
+            val updateRow = toUpdate[championIndex.first].toMutableList()
+
+            val itemToAdd = currState.items.items[itemIndex]
+
+            val boardSpace = updateRow[championIndex.second]
+            if (boardSpace is BoardChampion) {
+                //update emblems in separate function becase need knowledge of traits
+                if (boardSpace.items.size < 3 && !itemToAdd.name.contains("Emblem")) {
+                    updateRow[championIndex.second] =
+                        boardSpace.copy(items = boardSpace.items + itemToAdd)
+                }
+            }
+            toUpdate[championIndex.first] = updateRow
+            currState.copy(
+                board = BoardModel(toUpdate)
+            )
+        }
+    }
+
+    fun removeItemFromChampion(championIndex: Pair<Int, Int>, itemIndex: Int) {
+        _uiState.update { currState ->
+            val toUpdate = currState.board.rows.toMutableList()
+            val updateRow = toUpdate[championIndex.first].toMutableList()
+
+            val space = updateRow[championIndex.second]
+            if (space is BoardChampion) {
+                val item = space.items[itemIndex]
+                if (item.name.contains("Emblem")) {
+                    val traits = dataRepository.getTraitData()
+                    updateTraitData(
+                        traits.filter { it.name == item.name.getEmblemTraitName() },
+                        false
+                    )
+                }
+
+                updateRow[championIndex.second] =
+                    space.copy(items = space.items.filterIndexed { index, _ -> index != itemIndex })
+            }
+            toUpdate[championIndex.first] = updateRow
+            currState.copy(
+                board = BoardModel(toUpdate)
+            )
+        }
+    }
+
+    private fun updateTraitFromItem(championIndex: Pair<Int, Int>, itemIndex: Int) {
+        val currentChampion = _uiState.value.board.rows[championIndex.first][championIndex.second]
+        if (currentChampion is BoardChampion && currentChampion.items.size >= 3) {
+            return
+        }
+        val item = _uiState.value.items.items[itemIndex]
+        val traitName = item.name.getEmblemTraitName()
+        if (currentChampion is BoardChampion && !currentChampion.items.contains(item) && currentChampion.traits.all { it.name != traitName }) {
+            viewModelScope.launch {
+                val traits = dataRepository.getTraitData()
+                traits.firstOrNull {it.name == traitName}?.let { trait ->
+                    _uiState.update { currentState ->
+                        //add emblem trait to champion traits for removal later
+                        val updatedBoard = currentState.board.rows.toMutableList()
+                        val updatedRow = updatedBoard[championIndex.first].toMutableList()
+                        updatedRow[championIndex.second] = currentChampion.copy(
+                            traits = currentChampion.traits + trait,
+                            items = currentChampion.items + item
+                        )
+                        updatedBoard[championIndex.first] = updatedRow
+                        currentState.copy(
+                            board = BoardModel(updatedBoard)
+                        )
+                    }
+                    updateTraitData(listOf(trait), added = true)
+                }
+            }
         }
     }
 

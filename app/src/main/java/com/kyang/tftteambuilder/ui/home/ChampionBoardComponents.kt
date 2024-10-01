@@ -1,11 +1,13 @@
 package com.kyang.tftteambuilder.ui.home
 
+import android.graphics.Paint.Align
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
@@ -40,6 +43,8 @@ fun ChampionBoard(
     onSwap: (Pair<Int, Int>) -> Unit,
     fromBox: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     onRemove: (Pair<Int, Int>) -> Unit,
+    itemDrag: (Pair<Int, Int>, Int) -> Unit,
+    itemRemove: (Pair<Int, Int>, Int) -> Unit,
     swapIndex: Pair<Int, Int>,
     board: BoardModel
 ) {
@@ -60,6 +65,8 @@ fun ChampionBoard(
                         isSwapping = swapIndex == Pair(rowNum, columnNum),
                         championIndex = Pair(rowNum, columnNum),
                         onRemove = onRemove,
+                        itemRemove = itemRemove,
+                        itemDrag = itemDrag,
                         width = ((localConfig.screenWidthDp - 32) / row.size).dp
                     )
                 }
@@ -77,6 +84,8 @@ internal fun Space(
     isSwapping: Boolean,
     onSwap: (Pair<Int, Int>) -> Unit,
     onRemove: (Pair<Int, Int>) -> Unit,
+    itemDrag: (Pair<Int, Int>, Int) -> Unit,
+    itemRemove: (Pair<Int, Int>, Int) -> Unit,
     fromBox: (Pair<Int, Int>, Pair<Int, Int>) -> Unit,
     width: Dp = 64.dp
 ) {
@@ -86,13 +95,10 @@ internal fun Space(
                 event.mimeTypes().forEachIndexed { index, s ->
                     if (s == "text/plain") {
                         val dataIndex = event.toAndroidDragEvent().clipData.getItemAt(index).text
-                        dataIndex.toString().parseAsIndex()?.let {
-                            val label = event.toAndroidDragEvent().clipData.description.label
-                            if (label == "box") {
-                                fromBox(it, championIndex)
-                            }
+                        val label = event.toAndroidDragEvent().clipData.description.label
+                        if (label == "Item") {
+                            dataIndex.toString().toIntOrNull()?.let { itemDrag(championIndex, it) }
                         }
-
                     }
                 }
                 return true
@@ -120,6 +126,7 @@ internal fun Space(
                 champion = boardSpace,
                 championIndex = championIndex,
                 width = width,
+                itemRemove = itemRemove,
                 isSwapping = isSwapping
             )
         }
@@ -132,12 +139,14 @@ internal fun Space(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChampionSpace(
     modifier: Modifier = Modifier,
     width: Dp = 96.dp,
     champion: BoardChampion,
     championIndex: Pair<Int, Int>,
+    itemRemove: (Pair<Int, Int>, Int) -> Unit,
     isSwapping: Boolean,
 ) {
     val hexagon = remember {
@@ -163,6 +172,20 @@ fun ChampionSpace(
                     color = if (isSwapping) Color.Red else Color.Black
                 )
         )
+        Row(modifier = Modifier.align(Alignment.BottomCenter)) {
+            for ((index, item) in champion.items.withIndex()) {
+                AsyncImage(
+                    model = item.image,
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(width.times(0.25f))
+                        .combinedClickable(
+                            onDoubleClick = { itemRemove(championIndex, index) },
+                            onClick = {})
+                )
+            }
+        }
     }
 }
 
