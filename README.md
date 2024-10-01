@@ -12,6 +12,11 @@ the functionality in an Android app.
 I am used an html version of tactics.tools on Set 12 (since I could not find the unit data in
 Riot's API at the time).
 
+### Experimental Features
+
+There are implementations of experimental features in `items` and `drag-drop`. If you're interested
+in seeing those implementations, check them out!
+
 ### Legal
 
 This app uses assets from tactics.tools and MetaTFT, but for non commercial purposes. If the assets
