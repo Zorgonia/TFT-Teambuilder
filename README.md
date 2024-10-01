@@ -12,6 +12,15 @@ the functionality in an Android app.
 I am used an html version of tactics.tools on Set 12 (since I could not find the unit data in
 Riot's API at the time).
 
+### Item Integration
+
+Experimental branch with item integration. Supports emblems, including unique emblems, and not being
+able to drag emblems on units that already have that trait. Examples below:
+
+![Screenshot of Items](/images/items.png "Screenshot of Items")
+
+![Video of Items](/images/items_2.mov "Video of Items")
+
 ### Legal
 
 This app uses assets from tactics.tools and MetaTFT, but for non commercial purposes. If the assets
